@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  
+  <link href="/home/kah/ArquiteturaApis/cp-front/Front/style.css" rel="stylesheet">
+</head>
+<body>
+  
+
+<!-- Imagens -->
+
+    <div class="Fundo">
+        
+        <img class="Fundo" src="/home/kah/ArquiteturaApis/Business.jpeg">
+
+    </div>
+
+    <div class="CP">
+     
+      <img class="cp" src="/home/kah/ArquiteturaApis/logo.jpeg">
+
+    </div>
+
+  <div class="login-container">
+
+    <div class="login-form">
+
+      <h2>Tela de Login</h2>
+
+      <input type="text" id="login" placeholder="Login"> <br>
+
+    <input type="password" id="senha" placeholder="Senha"> <br>
+    <div class="entrar">
+     
+      <button onclick="login()">Entrar</button><a href="file:///home/cygni/Documentos/Karin/CP-Tela2/html/index.html"></a>
+    </div>
+      <p class="register-link" onclick="toggleForm()">Não possuí conta? Clique aqui</p><a></a>
+    </div>
+  </div>
+
+  <script>
+
+    function toggleForm() {
+      var loginContainer = document.querySelector('.login-container');
+      loginContainer.style.display = loginContainer.style.display === 'none' ? 'flex' : 'none';
+    }
+  
+  function login() {
+    // Obtenha os valores dos campos de email e senha
+    var login = document.getElementById('login').value;
+    var senha = document.getElementById('senha').value;
+
+    // Verifique se os campos de email e senha estão preenchidos
+    if (login && senha) {
+      const headers = new Headers({ "Content-Type": "application/json" });
+      const payload = JSON.stringify({login: login, password: senha});
+      const requestInit = { method: 'POST', headers: headers, body: payload };
+      
+      fetch('http://localhost:8000/auth/login', requestInit)
+      .then(async (res) => {
+        if (res.status == 200) {
+          const data = await res.json();
+          document.cookie = "access-token=" + data.access_token;
+          window.location.href = '/home/kah/ArquiteturaApis/cp-front/Front/tela3.html'
+          
+        }
+      })
+    }
+  }
+</script>
+ 
+</body>
+</html>

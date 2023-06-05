@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Points</title>
+
+    <link rel="stylesheet" href="tela3.css">
+</head>
+
+<body>
+
+    <div class="root-grid">
+        <div class="top-bar">
+            <div class="business">
+                <img class="person" src="https://i.imgur.com/bmowpF6.png">
+                <div class="text"><p>Você no controle!</p></div>
+            </div>
+            <div class="swagger">
+                <a href="https://app.swaggerhub.com/apis/VIVIANGARCIA2/API/1.0">Documentação Swagger</a>
+            </div>
+            <div class="criadores">
+                <p>Contato:</p>
+                <p>Karin Angela. Contato via e-mail (karin.nogueira@fatec.sp.gov.br) </p>
+                <p>Ângelo Luiz. Contato via e-mail (angelo.luiz.silva@hotmail.com)</p>
+                <p>Vivian Relvas. Contato via e-mail (vivian.garcia2@fatec.sp.gov.br )</p> </div>
+                <a href="https://www.instagram.com/karindiox/"><img src="https://cdn-icons-png.flaticon.com/512/1409/1409946.png" class="instaKah"></a>
+                <a href="https://www.instagram.com/angeloluizdasilva/"><img src="https://cdn-icons-png.flaticon.com/512/1409/1409946.png" class="instaAngelo"></a>
+                <a href="https://www.instagram.com/vivianprelvas/"><img src="https://cdn-icons-png.flaticon.com/512/1409/1409946.png" class="instaVivian"></a>
+            
+
+                <div class="titulo1">
+                <h2>Anuncie aqui!</h2> </div>
+                <div class="anuncioFake">
+                    <iframe class="video" src="https://www.youtube.com/embed/MMZsWdbY4t4?start=3"></iframe>
+                <img class="anuncio" src="https://media.tenor.com/x8daw0xtTMcAAAAC/jequiti-minisseries.gif">
+                <img class="anuncio1" src="https://64.media.tumblr.com/83879a192464bf5869f7c8c740aec026/tumblr_nje88mgm0x1u1uop4o1_500.gif">
+                </div> 
+
+            <a onclick="logout()">Sair</a>
+        </div>
+        <div class="right-bar">
+
+        </div>
+        <div class="content">
+
+            <div class="card-collection">
+                <h2>Risco</h2>
+
+                <div class="collection-content">
+                    <div class="card" id="risco-baixo">
+                        <h3>Baixo</h3>
+                        <p>Significa que você não possui dividas pendentes, aumentando sua chance de conseguir um
+                            empréstimo!</p>
+                    </div>
+
+                    <div class="card" id="risco-médio">
+                        <h3>Médio</h3>
+                        <p>Significa que você possui algumas dividas pendentes, porém ainda á chance de conseguir um empréstimo!</p>
+                    </div>
+
+                    <div class="card" id="risco-alto">
+                        <h3>Alto</h3>
+                        <p>Possuí muitas dividas pendentes, o que significa que não será possível conseguir um empréstimo!</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card-collection">
+                <h2>Score</h2>
+
+                <div class="collection-content">
+                    <div class="card" id="score-péssimo">
+                        <h3>Péssimo</h3>
+                        <p>Você possuí um salario abaixo da média, não será possível realizar um emprestimo de alto valor!</p>
+                    </div>
+
+                    <div class="card" id="score-ruim">
+                        <h3>Ruim</h3>
+                        <p>Você possuí um salario mediano referente á média, será difícil conseguir um emprestimo de alto valor!</p>
+                    </div>
+
+                    <div class="card" id="score-regular">
+                        <h3>Regular</h3>
+                        <p>Você possuí um salario OK referente á média, será facil conseguir um emprestimo de valor mediano!</p>
+                    </div>
+
+                    <div class="card" id="score-bom">
+                        <h3>Bom</h3>
+                        <p> Você possuí um salario mínimo, será possível conseguir um emprestimo de alto valor!</p>
+                    </div>
+
+                    <div class="card" id="score-ótimo">
+                        <h3>Ótimo</h3>
+                        <p>Você possuí um salario acima da média, será facil conseguir um emprestimo de alto valor!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar dados do usuario quando a tela carregar
+        window.addEventListener("load", async () => {
+            const userData = await getUserData();
+            const userScoreHistory = await getUserScoreHistory(userData);
+            const lastScore = userScoreHistory[userScoreHistory.length - 1];
+            toggleRiscoCard(lastScore);
+            toggleScoreCard(lastScore);
+        })
+
+        // Carregar dados do usuario pela API
+        function getUserData() {
+            const accessToken = document.cookie.split('=')[1];
+            const headers = new Headers({ 'Authorization': `Bearer ${accessToken}` });
+            const requestInit = { method: 'GET', headers: headers }
+            return fetch("http://localhost:8000/auth/me", requestInit)
+                .then((res) => res.json())
+                .then((data) => data);
+        } const accessToken = document.cookie.split('=')[1];
+        // Buscar histórico de score do usuario
+        function getUserScoreHistory(userData) {
+            const accessToken = document.cookie.split('=')[1];
+            const headers = new Headers({ 'Authorization': `Bearer ${accessToken}` });
+            const requestInit = { method: 'GET', headers: headers }
+            return fetch(`http://localhost:8000/scores/${userData.id_cliente}`, requestInit)
+                .then((res) => res.json())
+                .then((data) => data);
+        }
+
+        // Colorir card com o risco do usuario
+        function toggleRiscoCard(lastScore) {
+            const cardId = `risco-${lastScore.risco.toLowerCase()}`;
+            const card = document.getElementById(cardId);
+            const cardColorClass = pickRiscoCardColor(lastScore);
+
+            card.classList.add(cardColorClass);
+        }
+
+        // Escolher cor do card com base no risco
+        function pickRiscoCardColor(lastScore) {
+            switch (lastScore.risco) {
+                case 'BAIXO':
+                    return 'green';
+                    break;
+
+                case 'MÉDIO':
+                    return 'yellow';
+                    break;
+
+                case 'ALTO':
+                    return 'red';
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // Colorir card com o score do usuario
+        function toggleScoreCard(lastScore) {
+            const cardId = `score-${lastScore.desempenho.toLowerCase()}`
+            const card = document.getElementById(cardId);
+            const cardColorClass = pickScoreCardColor(lastScore);
+
+            card.classList.add(cardColorClass);
+        }
+
+        // Escolher cor do card com base no score
+        function pickScoreCardColor(lastScore) {
+            switch (lastScore.desempenho) {
+                case 'PÉSSIMO':
+                    return 'red';
+                    break;
+
+                case 'RUIM':
+                    return 'orange';
+                    break;
+
+                case 'REGULAR':
+                    return 'yellow';
+                    break;
+
+                case 'BOM':
+                    return 'green';
+                    break;
+
+                case 'ÓTIMO':
+                    return 'blue'
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // Deslogar usuario
+        function logout() {
+            document.cookie = "access-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/home/cygni/Documentos/Karin/CP-Front/Front;"; // MUDAR
+            window.location.href = '/home/kah/ArquiteturaApis/cp-front/Front/index.html' 
+        }
+    </script>
+</body>
+
+</html>
